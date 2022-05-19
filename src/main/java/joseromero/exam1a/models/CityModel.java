@@ -13,17 +13,31 @@ public class CityModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "id", unique = true, nullable = false)
     private Long id;
 
+    @Column(scale = 4, precision = 10, name = "lat", nullable = false)
     private float lat;
 
+    @Column(scale = 4, precision = 10, name = "lng", nullable = false)
     private float lng;
 
+    @Column(nullable = false, length = 30)
     private String name;
 
+    @Column(nullable = false, length = 30)
+    private String state;
+
+    @Column(nullable = false, length = 30)
     private String country;
 
+    public String getState() {
+        return this.state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
 
     public Long getId(){
         return this.id;
@@ -63,6 +77,10 @@ public class CityModel {
 
     public void setCountry(String country){
         this.country = country;
+    }
+
+    public String getFullName(){
+        return this.name + ", " + this.state + ", " + this.country;
     }
 
 }
