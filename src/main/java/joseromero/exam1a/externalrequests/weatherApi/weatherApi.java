@@ -2,15 +2,19 @@ package joseromero.exam1a.externalrequests.weatherApi;
 
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
+import org.json.JSONObject;
 
 import joseromero.exam1a.externalrequests.weatherApi.schemas.forecast;
-import joseromero.exam1a.externalrequests.weatherApi.schemas.listSchema;
-
+import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
+
 
 public class weatherApi {
     private String apiKey;
@@ -22,22 +26,19 @@ public class weatherApi {
     public forecast getWeatherFor(float lat, float lng, String units) {
 
 
-        Map r = Unirest.get("https://api.openweathermap.org/data/2.5/weather")
+        HttpResponse<String> s = Unirest.get("https://api.openweathermap.org/data/2.5/weather")
                 .header("accept", "application/json")
                 .queryString("lat", lat)
                 .queryString("lon", lng)
                 .queryString("units", units)
                 .queryString("appid", this.apiKey)
-                .asObject(i -> new Gson().fromJson(i.getContentReader(), HashMap.class))
-                .getBody();
+                .asString();
         
+        String body = s.getBody();
+        JSONObject myJson = new JSONObject(body);
+        JsonArray data = myJson.get("main");
+
         forecast response = new forecast();
-        response.cnt = (int) r.get("cnt");
-        response.message = (int) r.get("message");
-        response.cod = (String) r.get("cod");
-        
-
-
         return response;
     }
    
