@@ -1,6 +1,8 @@
 package joseromero.exam1a.responses;
 
 public class DayWeather {
+    public String date;
+
     /**
      * Temperatura promedio
      */
@@ -27,15 +29,17 @@ public class DayWeather {
      */
     public String description;
 
+    /**
+     * Temperatura máxima
+     */
+    public String maxTemperature;
+
+    /**
+     * Temperatura mínima
+     */
+    public String minTemperature;
+
     public DayWeather() {
 
-    }
-
-    public DayWeather(String country, String temperature, String humidity, String wind, String pressure, String description, String icon) {
-        this.temperature = temperature;
-        this.humidity = humidity;
-        this.wind = wind;
-        this.pressure = pressure;
-        this.description = description;
     }
 }
