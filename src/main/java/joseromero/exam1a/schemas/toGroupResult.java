@@ -1,19 +1,18 @@
 package joseromero.exam1a.schemas;
 
-import java.util.List;
-
+import java.util.ArrayList;
 
 public class toGroupResult {
 
-    public List<Float> minTemperatures;
+    public ArrayList<Double> minTemperatures = new ArrayList<Double>();
 
-    public List<Float> maxTemperatures;
+    public ArrayList<Double> maxTemperatures = new ArrayList<Double>();
 
-    public List<Float> temperatures;
+    public ArrayList<Double> temperatures = new ArrayList<Double>();
 
-    public List<Float> humidity;
+    public ArrayList<Integer> humidity = new ArrayList<Integer>();
 
-    public List<Float> pressure;
+    public ArrayList<Double> pressure = new ArrayList<Double>();
 
-    public List<Float> wind;
+    public ArrayList<Double> wind = new ArrayList<Double>();
 }

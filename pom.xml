@@ -54,6 +54,11 @@
 			<artifactId>unirest-object-mappers-gson</artifactId>
 			<version>3.11.09</version>
 		</dependency>
+		<dependency>
+			<groupId>com.github.prominence</groupId>
+			<artifactId>openweathermap-api</artifactId>
+			<version>2.3.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>

@@ -1,19 +1,22 @@
 package joseromero.exam1a.controllers;
 
 import java.text.ParseException;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Optional;
 
-import org.joda.time.DateTime;
+import com.github.prominence.openweathermap.api.model.forecast.Forecast;
+import com.github.prominence.openweathermap.api.model.forecast.WeatherForecast;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import joseromero.exam1a.externalrequests.weatherApi.weatherApi;
-import joseromero.exam1a.externalrequests.weatherApi.schemas.forecast;
-import joseromero.exam1a.externalrequests.weatherApi.schemas.listSchema;
 import joseromero.exam1a.models.CityModel;
 import joseromero.exam1a.responses.DayWeather;
 import joseromero.exam1a.responses.WeatherResponse;
@@ -27,6 +30,8 @@ public class MainController {
     CityService cityService;
 
     @GetMapping("/getWeather")
+    @ResponseBody
+    @CrossOrigin(origins = "*")
     public WeatherResponse getWeather(
         @RequestParam(required = true) Long cityId, 
         @RequestParam(required = true) String unitsType,
@@ -40,27 +45,21 @@ public class MainController {
         response.data = new ArrayList<DayWeather>();
         if (city.isPresent()) {
             weatherApi weatherApi = new weatherApi();
-            forecast forecast = weatherApi.getWeatherFor(city.get().getLat(), city.get().getLng(), unitsType);
+            Forecast forecast = weatherApi.getWeatherFor(city.get().getLat(), city.get().getLng(), unitsType);
             HashMap<String, toGroupResult> days = new HashMap<String, toGroupResult>();
-            for (listSchema item : forecast.getList()) {
-                String date = item.getDt_text();
-                DateTime dateTime = new DateTime(date)
-                    .withHourOfDay(0)
-                    .withMinuteOfHour(0)
-                    .withSecondOfMinute(0)
-                    .withMillisOfSecond(0);
-                String key = dateTime.toString("yyyy-MM-dd");
+            for (WeatherForecast item : forecast.getWeatherForecasts()) {
+                String key = item.getForecastTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
                 if (!days.containsKey(key)) {
                     days.put(key, new toGroupResult());
                 }
 
                 toGroupResult day = days.get(key);
-                day.humidity.add(item.getMain().getHumidity());
-                day.temperatures.add(item.getMain().getTemp());
+                day.humidity.add(item.getHumidity().getValue());
+                day.temperatures.add(item.getTemperature().getValue());
                 day.wind.add(item.getWind().getSpeed());
-                day.pressure.add(item.getMain().getPressure());
-                day.maxTemperatures.add(item.getMain().getTemp_max());
-                day.minTemperatures.add(item.getMain().getTemp_min());
+                day.pressure.add(item.getAtmosphericPressure().getValue());
+                day.maxTemperatures.add(item.getTemperature().getMaxTemperature());
+                day.minTemperatures.add(item.getTemperature().getMinTemperature());
 
                 days.put(key, day);
             }
@@ -70,12 +69,12 @@ public class MainController {
                 DayWeather dayWeather = new DayWeather();
                 dayWeather.date = dayKey;
                 String temp = unitsType.equals("metric") ? " C" : " F";
-                dayWeather.humidity = day.humidity.stream().reduce(0f, (a, b) -> a + b) / day.humidity.size()+" %";
-                dayWeather.temperature = day.temperatures.stream().reduce(0f, (a, b) -> a + b) / day.temperatures.size() + temp;
-                dayWeather.wind = day.wind.stream().reduce(0f, (a, b) -> a + b) / day.wind.size() + " m/s";
-                dayWeather.pressure = day.pressure.stream().reduce(0f, (a, b) -> a + b) / day.pressure.size() + " hPa";
-                dayWeather.maxTemperature = day.maxTemperatures.stream().reduce(0f, (a, b) -> a + b) / day.maxTemperatures.size() + temp;
-                dayWeather.minTemperature = day.minTemperatures.stream().reduce(0f, (a, b) -> a + b) / day.minTemperatures.size() + temp;
+                dayWeather.humidity = day.humidity.stream().reduce(0, (a, b) -> a + b) / day.humidity.size()+" %";
+                dayWeather.temperature = day.temperatures.stream().reduce(0d, (a, b) -> a + b) / day.temperatures.size() + temp;
+                dayWeather.wind = day.wind.stream().reduce(0d, (a, b) -> a + b) / day.wind.size() + " m/s";
+                dayWeather.pressure = day.pressure.stream().reduce(0d, (a, b) -> a + b) / day.pressure.size() + " hPa";
+                dayWeather.maxTemperature = day.maxTemperatures.stream().reduce(0d, (a, b) -> a + b) / day.maxTemperatures.size() + temp;
+                dayWeather.minTemperature = day.minTemperatures.stream().reduce(0d, (a, b) -> a + b) / day.minTemperatures.size() + temp;
                 response.data.add(dayWeather);
             }
 

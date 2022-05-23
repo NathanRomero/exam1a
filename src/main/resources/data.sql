@@ -36,6 +36,6 @@ INSERT INTO cities (`lat`, `lng`, `name`, `state`, `country`) VALUES (
     25.6714,
     -100.309,
     'Monterrey',
-    'Nuevo León',
-    'México'
+    'Nuevo Leon',
+    'Mexico'
 );
