@@ -1,5 +1,6 @@
 package joseromero.exam1a.controllers;
 
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -63,18 +64,20 @@ public class MainController {
 
                 days.put(key, day);
             }
-
+            DecimalFormat formater = new DecimalFormat("#.##");
             for (String dayKey : days.keySet()) {
                 toGroupResult day = days.get(dayKey);
                 DayWeather dayWeather = new DayWeather();
                 dayWeather.date = dayKey;
                 String temp = unitsType.equals("metric") ? " C" : " F";
-                dayWeather.humidity = day.humidity.stream().reduce(0, (a, b) -> a + b) / day.humidity.size()+" %";
-                dayWeather.temperature = day.temperatures.stream().reduce(0d, (a, b) -> a + b) / day.temperatures.size() + temp;
-                dayWeather.wind = day.wind.stream().reduce(0d, (a, b) -> a + b) / day.wind.size() + " m/s";
-                dayWeather.pressure = day.pressure.stream().reduce(0d, (a, b) -> a + b) / day.pressure.size() + " hPa";
-                dayWeather.maxTemperature = day.maxTemperatures.stream().reduce(0d, (a, b) -> a + b) / day.maxTemperatures.size() + temp;
-                dayWeather.minTemperature = day.minTemperatures.stream().reduce(0d, (a, b) -> a + b) / day.minTemperatures.size() + temp;
+                dayWeather.humidity = formater.format(
+                    day.humidity.stream().reduce(0, (a, b) -> a + b) / day.humidity.size()
+                ) + " %";
+                dayWeather.temperature = formater.format(day.temperatures.stream().reduce(0d, (a, b) -> a + b) / day.temperatures.size()) + temp;
+                dayWeather.wind = formater.format(day.wind.stream().reduce(0d, (a, b) -> a + b) / day.wind.size()) + " m/s";
+                dayWeather.pressure = formater.format(day.pressure.stream().reduce(0d, (a, b) -> a + b) / day.pressure.size()) + " hPa";
+                dayWeather.maxTemperature = formater.format(day.maxTemperatures.stream().reduce(0d, (a, b) -> a + b) / day.maxTemperatures.size()) + temp;
+                dayWeather.minTemperature = formater.format(day.minTemperatures.stream().reduce(0d, (a, b) -> a + b) / day.minTemperatures.size()) + temp;
                 response.data.add(dayWeather);
             }
 
