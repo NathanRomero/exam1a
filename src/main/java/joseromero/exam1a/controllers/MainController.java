@@ -4,8 +4,8 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Optional;
+import java.util.TreeMap;
 
 import com.github.prominence.openweathermap.api.model.forecast.Forecast;
 import com.github.prominence.openweathermap.api.model.forecast.WeatherForecast;
@@ -47,7 +47,7 @@ public class MainController {
         if (city.isPresent()) {
             weatherApi weatherApi = new weatherApi();
             Forecast forecast = weatherApi.getWeatherFor(city.get().getLat(), city.get().getLng(), unitsType);
-            HashMap<String, toGroupResult> days = new HashMap<String, toGroupResult>();
+            TreeMap<String, toGroupResult> days = new TreeMap<String, toGroupResult>();
             for (WeatherForecast item : forecast.getWeatherForecasts()) {
                 String key = item.getForecastTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
                 if (!days.containsKey(key)) {
@@ -64,6 +64,7 @@ public class MainController {
 
                 days.put(key, day);
             }
+            
             DecimalFormat formater = new DecimalFormat("#.##");
             for (String dayKey : days.keySet()) {
                 toGroupResult day = days.get(dayKey);
@@ -80,8 +81,6 @@ public class MainController {
                 dayWeather.minTemperature = formater.format(day.minTemperatures.stream().reduce(0d, (a, b) -> a + b) / day.minTemperatures.size()) + temp;
                 response.data.add(dayWeather);
             }
-
-            
             
             String[] rangeArray = range.split("-");
 
@@ -93,7 +92,8 @@ public class MainController {
                     start = end;
                     end = aux;
                 }
-                response.data = response.data.subList(start - 1, end);
+                start = start - 1;
+                response.data = response.data.subList(start, end);
             }
         }
 

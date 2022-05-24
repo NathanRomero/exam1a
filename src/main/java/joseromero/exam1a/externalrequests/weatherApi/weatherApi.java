@@ -19,9 +19,9 @@ public class weatherApi {
         Coordinate coordinate = Coordinate.of(lat, lng);
         UnitSystem unit = null;
         if (units.equals("Metric")) {
-            unit = UnitSystem.IMPERIAL;
-        } else {
             unit = UnitSystem.METRIC;
+        } else {
+            unit = UnitSystem.IMPERIAL;
         }
         Forecast response = openWeatherClient.forecast5Day3HourStep()
             .byCoordinate(coordinate)
